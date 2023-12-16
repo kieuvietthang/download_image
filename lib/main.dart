@@ -55,18 +55,18 @@ class _MyAppState extends State<MyApp> {
 
   List<String> itemsNew = [];
 
-  void downloadSticker(int index) async {
+  void downloadSticker(int x, int y) async {
     if (Platform.isAndroid) {
       Directory? dir = await getExternalStorageDirectory();
       final file = File(
-          '${dir!.path}/${listSticker[index][index].linkNetwork.toString().split("/").last}');
+          '${dir!.path}/${listSticker[x][y].linkNetwork.toString().split("/").last}');
       print(
-          'save : ${dir.path}/${listSticker[index][index].linkNetwork.toString().split("/").last}');
+          'save : ${dir.path}/${listSticker[x][y].linkNetwork.toString().split("/").last}');
       if (file.existsSync()) {
         itemsNew.add(file.path);
       } else {
         final http.Response response = await http.get(Uri.parse(
-            '$url${listSticker[index][index].linkNetwork}'));
+            '$url${listSticker[x][y].linkNetwork}'));
         await file.writeAsBytes(response.bodyBytes);
         itemsNew.add(file.path);
       }
@@ -74,7 +74,7 @@ class _MyAppState extends State<MyApp> {
     } else if (Platform.isIOS) {
       Directory? dir = await getApplicationDocumentsDirectory();
       final file = File(
-          '${dir.path}/${listSticker[index][index].linkNetwork.toString().split("/").last}');
+          '${dir.path}/${listSticker[x][y].linkNetwork.toString().split("/").last}');
       if (file.existsSync()) {
         itemsNew.add(file.path);
       } else {
@@ -101,14 +101,14 @@ class _MyAppState extends State<MyApp> {
             : ListView.builder(
                 itemCount: listSticker.length,
                 itemBuilder: (context, index) {
-                  return _buildListItem(listSticker[index]);
+                  return _buildListItem(listSticker[index], index);
                 },
               ),
       ),
     );
   }
 
-  Widget _buildListItem(List<DowloadItem> items) {
+  Widget _buildListItem(List<DowloadItem> items, int x) {
     return GridView.builder(
         itemCount: items.length,
         shrinkWrap: true,
@@ -138,7 +138,7 @@ class _MyAppState extends State<MyApp> {
                 Image.network('http://103.176.149.253:8088/${items[index].linkNetwork}'),
                 GestureDetector(
                   onTap: (){
-                    downloadSticker(index);
+                    downloadSticker(x, index);
                   },
                   child: Container(
                     decoration: const BoxDecoration(
